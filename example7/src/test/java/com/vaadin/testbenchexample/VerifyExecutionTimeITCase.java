@@ -45,7 +45,7 @@ public class VerifyExecutionTimeITCase extends TestBenchTestCase {
 	public void verifyServerExecutionTime() throws Exception {
 		System.out.println("Calculating 10 times 100 times 1+2...");
 		
-		for (int j = 0; j < 10; j++) {
+		for (int j = 0; j < 1; j++) {
 
 			openCalculator();
 			long currentSessionTime = testBench(getDriver())

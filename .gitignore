@@ -4,3 +4,7 @@ example*/target/
 example*/.project
 example*/.classpath
 example*/.settings/
+
+example6/chromedriver.log
+
+example7/chromedriver.log

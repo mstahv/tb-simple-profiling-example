@@ -1,150 +1,77 @@
 package com.vaadin.testbenchexample;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-class CalcWindow extends Window implements ClickListener {
-    // All variables are automatically stored in the session.
-    private Double current = 0.0;
-    private double stored = 0.0;
-    private char lastOperationRequested = 'C';
-    private VerticalLayout topLayout = new VerticalLayout();
+class CalcWindow extends Window {
+	  private VerticalLayout rootLayout;
 
-    // User interface components
-    private final Label display = new Label("0.0");
+	  private void onGetMoreDataClick() {
 
-    private final Log log = new Log();
+	    CssLayout dataRows = new CssLayout();
+	    dataRows.setSizeUndefined();
+
+	    for (int i = 0; i < 50; ++i) {
+	      dataRows.addComponent(initDataRow());
+	    }
+
+	    rootLayout.addComponent(dataRows);
+	  }
+
+	  private Component initDataRow() {
+	    CssLayout rowLayout = new CssLayout();
+	    rowLayout.addStyleName("cd-fileepisodepanel");
+	    rowLayout.setSizeUndefined();
+
+	    Button btn = new Button("Program title");
+	    btn.addStyleName("cd-link cd-program");
+	    rowLayout.addComponent(btn);
+
+	    CssLayout episodeLayout = new CssLayout();
+	    episodeLayout.setSizeUndefined();
+	    episodeLayout.addStyleName("cd-episode");
+	    rowLayout.addComponent(episodeLayout);
+
+	    btn = new Button("Data sub title");
+	    btn.addStyleName("cd-link strong");
+	    episodeLayout.addComponent(btn);
+
+	    Label lbl = new Label("Some more information about the file.");
+	    episodeLayout.addComponent(lbl);
+
+	    btn = new Button("Expand data details...");
+	    btn.setSizeUndefined();
+	    btn.addStyleName("cd-mini cd-fileinfo-expand");
+	    rowLayout.addComponent(btn);
+
+	    lbl = new Label("<hr>", Label.CONTENT_XHTML);
+	    lbl.addStyleName("cd-divider");
+	    rowLayout.addComponent(lbl);
+
+	    return rowLayout;
+	  }
 
     public CalcWindow() {
-        super("Calc window");
-        setContent(topLayout);
-        display.setDebugId("display");
+	    rootLayout = new VerticalLayout();
+	    rootLayout.setSizeUndefined();
+	    setContent(rootLayout);
 
-        // Create the main layout for our application (4 columns, 5 rows)
-        final GridLayout layout = new GridLayout(4, 5);
+	    Button btn = new Button("Get more data now");
+	    btn.setDebugId("getmore");
+	    btn.addListener(new Button.ClickListener() {
 
-        topLayout.setMargin(true);
-        topLayout.setSpacing(true);
-        Label title = new Label("<h1>Calculator</h1>", Label.CONTENT_XHTML);
-        topLayout.addComponent(title);
-        topLayout.addComponent(log);
+	      @Override
+	      public void buttonClick(ClickEvent event) {
+	        onGetMoreDataClick();
+	      }
+	    });
+	    rootLayout.addComponent(btn);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setSpacing(true);
-        horizontalLayout.addComponent(layout);
-        horizontalLayout.addComponent(log);
-        topLayout.addComponent(horizontalLayout);
-
-        // Create a result label that over all 4 columns in the first row
-        layout.addComponent(display, 0, 0, 3, 0);
-        layout.setComponentAlignment(display, Alignment.MIDDLE_RIGHT);
-        display.setSizeUndefined();
-
-        // The operations for the calculator in the order they appear on the
-        // screen (left to right, top to bottom)
-        String[] operations = new String[] { "7", "8", "9", "/", "4", "5", "6",
-                "*", "1", "2", "3", "-", "0", "=", "C", "+" };
-
-        for (String caption : operations) {
-
-            // Create a button and use this application for event handling
-            NativeButton button = new NativeButton(caption);
-            button.setHeight("30px");
-            button.setWidth("40px");
-            button.addListener(this);
-            button.setDebugId("button_" + caption);
-
-            // Add the button to our main layout
-            layout.addComponent(button);
-        }
-    }
-
-    // Event handler for button clicks. Called for all the buttons in the
-    // application.
-    public void buttonClick(ClickEvent event) {
-
-        // Get the button that was clicked
-        Button button = event.getButton();
-
-        // Get the requested operation from the button caption
-        char requestedOperation = button.getCaption().charAt(0);
-
-        // Calculate the new value
-        double newValue = calculate(requestedOperation);
-
-        // Update the result label with the new value
-        display.setValue(""+newValue);
-
-    }
-
-    // Calculator "business logic" implemented here to keep the example
-    // minimal
-    private double calculate(char requestedOperation) {
-        if ('0' <= requestedOperation && requestedOperation <= '9') {
-            if (current == null) {
-                current = 0.0;
-            }
-            current = current * 10
-                    + Double.parseDouble("" + requestedOperation);
-            return current;
-        }
-
-        if (current == null) {
-            current = stored;
-        }
-        switch (lastOperationRequested) {
-        case '+':
-            stored += current;
-            break;
-        case '-':
-            stored -= current;
-            break;
-        case '/':
-            stored /= current;
-            break;
-        case '*':
-            stored *= current;
-            break;
-        default:
-            stored = current;
-            break;
-        }
-
-        switch (requestedOperation) {
-        case '+':
-            log.addRow(current + " +");
-            break;
-        case '-':
-            log.addRow(current + " -");
-            break;
-        case '/':
-            log.addRow(current + " /");
-            break;
-        case '*':
-            log.addRow(current + " x");
-            break;
-        case '=':
-            log.addRow(current + " =");
-            log.addRow("------------");
-            log.addRow("" + stored);
-            break;
-        }
-
-        lastOperationRequested = requestedOperation;
-        current = null;
-        if (requestedOperation == 'C') {
-            log.addRow("0.0");
-            stored = 0.0;
-        }
-        return stored;
     }
 
 }

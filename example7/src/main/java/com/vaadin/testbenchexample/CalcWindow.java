@@ -13,12 +13,22 @@ import com.vaadin.ui.VerticalLayout;
 public class CalcWindow extends UI {
 	  private CssLayout rootLayout;
 	  
-	  private Label l = new Label("Click count 0");
-
+	  
+	  private CssLayout stuff;
 	  int count = 0;
 	  
 	  private void increment() {
-		  l.setValue("Click count " + ++count);
+		  if(stuff != null) {
+			  rootLayout.removeComponent(stuff);
+		  }
+		  
+		  stuff = new CssLayout();
+		  for(int i =0 ; i < 1000; i++) {
+			  Label label = new Label("TExt" + i);
+			  label.setSizeUndefined();
+			  stuff.addComponent(label);
+		  }
+		  rootLayout.addComponent(stuff);
 	  }
 
 
@@ -38,8 +48,6 @@ public class CalcWindow extends UI {
 		      }
 		    });
 		    rootLayout.addComponent(btn);
-		    l.setSizeUndefined();
-		    rootLayout.addComponent(l);
 	  }
 
 }

@@ -32,8 +32,10 @@ public class VerifyExecutionTimeITCase extends TestBenchTestCase {
 		open();
 		long currentSessionTime = testBench(getDriver())
 				.totalTimeSpentServicingRequests();
-
-		getDriver().findElement(By.id("getmore")).click();
+		
+		for(int i =0 ; i < 50; i++) {
+			getDriver().findElement(By.id("getmore")).click();
+		}
 
 		long timeSpentByServerForSimpleCalculation = testBench()
 				.totalTimeSpentServicingRequests() - currentSessionTime;
